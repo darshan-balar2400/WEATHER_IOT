@@ -8,10 +8,22 @@ const AddInfo = CatchAsyncError(async(req,res,next) => {
     console.log(data);
 
     let obj = {
-        temp : Number(req.body.temp),
-        humidity:Number(req.body.humidity),
-        aqi:Number(req.body.aqi),
-        status:req.body.status
+    }
+
+    if(req.body.temp){
+        obj.temp = Number(req.body.temp);
+    }
+
+    if(req.body.humidity){
+        obj.humidity = Number(req.body.humidity);
+    }
+
+    if(req.body.aqi){
+        obj.aqi = Number(req.body.aqi);
+    }
+
+    if(req.body.status){
+        obj.status = req.body.status;
     }
 
     if(data == undefined || Object.keys(data).length <= 0){
