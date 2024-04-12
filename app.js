@@ -5,6 +5,8 @@ const CookieParser = require("cookie-parser");
 const app = express();
 
 const InfoRoute = require("./Routers/InfoRoute");
+const {GetInfo} = require("./Controllers/StoreInfo");
+
 
 // Setting up CORS
 app.use((req, res, next) => {
@@ -13,6 +15,8 @@ app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Headers", "*");
     next();
 });
+
+app.get("/",GetInfo);
 
 app.use(express.json());
 app.use(CookieParser());

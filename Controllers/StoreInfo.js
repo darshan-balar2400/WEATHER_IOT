@@ -21,7 +21,7 @@ const AddInfo = CatchAsyncError(async(req,res,next) => {
 
 const GetInfo = CatchAsyncError(async(req,res,next) => {
 
-    let data = await InfoModel.findById({_id:"6618b00c5003695fc4925b9b"});
+    let data = await InfoModel.findById({_id:"6618b2fb91bf5a1ac17aae48"});
 
     if(!data){
         return next(new ErrorHandler("No Data found!",404));
