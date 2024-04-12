@@ -9,7 +9,7 @@ const AddInfo = CatchAsyncError(async(req,res,next) => {
 
     let obj = {
         temp : Number(req.body.temp),
-        humidity:Number(req.body.humidity);
+        humidity:Number(req.body.humidity),
         aqi:Number(req.body.aqi),
         status:req.body.status
     }
