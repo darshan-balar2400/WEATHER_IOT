@@ -1,4 +1,4 @@
-const CatchAsyncError = require("../Utils/catchAsyncError");
+const CatchAsyncError = require("../Utils/CatchAsyncError");
 const InfoModel = require("../Models/Info");
 const ErrorHandler = require("../Utils/ErrorHandler");
 const AddInfo = CatchAsyncError(async(req,res,next) => {
