@@ -7,11 +7,18 @@ const AddInfo = CatchAsyncError(async(req,res,next) => {
 
     console.log(data);
 
+    let obj = {
+        temp : Number(req.body.temp),
+        humidity:Number(req.body.humidity);
+        aqi:Number(req.body.aqi),
+        status:req.body.status
+    }
+
     if(data == undefined || Object.keys(data).length <= 0){
         return next(new ErrorHandler("Please Enter Data",404));
     }
 
-    let newData = await InfoModel.findByIdAndUpdate({_id:"6618b2fb91bf5a1ac17aae48"},req.body,{new:true});
+    let newData = await InfoModel.findByIdAndUpdate({_id:"6618b2fb91bf5a1ac17aae48"},obj,{new:true});
 
     res.status(200).send({
         success:true,
