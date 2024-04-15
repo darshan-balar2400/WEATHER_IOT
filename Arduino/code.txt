@@ -1,0 +1,106 @@
+#include <DHT.h>
+#include <WiFi.h>
+#include "MQ135.h"
+#include <HTTPClient.h>
+
+#define DHTPIN 25     // Pin connected to the DHT sensor
+#define DHTTYPE DHT22   // DHT 22
+
+#define SSID "Darshan"
+#define SSID_PASSWORD "balar2400"
+
+// Server endpoint
+#define SERVER_URL "https://weather-iot-eight.vercel.app/send"
+
+DHT dht(DHTPIN, DHTTYPE);
+
+int sensor = 34;
+int sensorData = 0;
+
+void setup() {
+  pinMode(sensor, INPUT);
+  Serial.begin(9600);
+  dht.begin();
+  connectWiFi();
+}
+
+void loop() {
+  delay(2000);  // Wait for 2 seconds between measurements
+
+  float humidity = dht.readHumidity();
+  float temperature_C = dht.readTemperature();
+
+  if (isnan(humidity) || isnan(temperature_C)) {
+    Serial.println("Failed to read from DHT sensor!");
+  }
+
+  Serial.print("Humidity: ");
+  Serial.print(humidity);
+  Serial.print(" %\t");
+  Serial.print("Temperature: ");
+  Serial.print(temperature_C);
+  Serial.println(" °C");
+
+  sensorData = analogRead(sensor);      
+  Serial.print("Air Quality:");
+  Serial.print(sensorData, DEC);               
+  Serial.print(" PPM, ");
+
+  String aqiStatus = getAirQuality(sensorData);
+  Serial.println(aqiStatus);
+
+  String jsonData = "{\"temp\": " + String(50) +
+                    ", \"humidity\": " + String(80) +
+                    ", \"aqi\": " + String(sensorData) +
+                    ", \"status\": \"" + aqiStatus + "\"}";
+
+  // Send POST request to server
+  HTTPClient http;
+  http.setTimeout(10000); // Set timeout to 10 seconds
+  http.begin(SERVER_URL);
+  http.addHeader("Content-Type", "application/json");
+  int httpResponseCode = http.POST(jsonData);
+  Serial.println(http.getString());
+  if (httpResponseCode > 0) {
+    Serial.print("HTTP Response code: ");
+    Serial.println(httpResponseCode);
+  } else {
+    Serial.print("HTTP Error: ");
+    Serial.println(httpResponseCode);
+  }
+  http.end();
+
+  delay(2000);  // Wait for 2 seconds before next reading
+}
+
+String getAirQuality(int gasLevel) {
+  if (gasLevel < 181) {
+    return "GOOD";
+  } else if (gasLevel >= 181 && gasLevel < 225) {
+    return "POOR";
+  } else if (gasLevel >= 225 && gasLevel < 300) {
+    return "BAD";
+  } else if (gasLevel >= 300 && gasLevel < 350) {
+    return "WARNING";
+  } else {
+    return "TOXIC";
+  }
+}
+
+void connectWiFi() {
+  Serial.println();
+  Serial.print("Connecting to ");
+  Serial.println(SSID);
+
+  WiFi.begin(SSID, SSID_PASSWORD);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println("");
+  Serial.println("WiFi connected");
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
+}
